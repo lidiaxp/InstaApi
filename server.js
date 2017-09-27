@@ -32,10 +32,16 @@ var express = require('express'),
 
 	console.log('Servidor HTTP esta escutando na porta ' + port);
 
+	var uri = 'mongodb://lidiaxp:lidiaxp123@host:port/db';
+	mongodb.MongoClient.connect(uri, function(err, db) {
+	
 	app.get('/', function(req, res){
 		res.send({msg: 'oi'});
 	});
+	}
 
+	
+/*
 	//POST
 	app.post('/api', function(req, res){
 		//res.setHeader("Access-Control-allow-Origin", "*"); //ou coloca a url no lugar do * se quiser limitar as chamadas
@@ -104,7 +110,7 @@ var express = require('express'),
 						/*if(results === null){
 							res.status(res.status(500).json(results));
 						}else{*/
-							res.json(results);
+		/*					res.json(results);
 						//}
 					}
 					mongoClient.close();
@@ -129,7 +135,7 @@ var express = require('express'),
 		});
 	});*/
 
-	app.get('/imagens/:imagem', function(req, res){
+	/*app.get('/imagens/:imagem', function(req, res){
 		var img = req.params.imagem;
 
 		fs.readFile('./uploads/' + img, function(err, conteudo){
@@ -191,7 +197,7 @@ var express = require('express'),
 	});
 
 	//DELETE por id
-	app.delete('/api/:id', function(req, res){
+	/*app.delete('/api/:id', function(req, res){
 		db.open(function(err, mongoClient){
 			mongoClient.collection('postagens', function(err, collection){
 				collection.update(
@@ -228,4 +234,4 @@ var express = require('express'),
 				);
 			});
 		});*/
-	});
+	});*/
