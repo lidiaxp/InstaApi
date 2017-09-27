@@ -1,12 +1,12 @@
 var express = require('express'),
 	bodyParser = require('body-parser'),
-	mongodb = require('mongodb'),
-        mongoose = require('mongoose'),
-	multiparty = require('connect-multiparty'),
-	fs = require('fs'),
-	objectId = require('mongodb').ObjectId;
+	//mongodb = require('mongodb'),
+        mongoose = require('mongoose');//,
+	//multiparty = require('connect-multiparty'),
+	//fs = require('fs'),
+	//objectId = require('mongodb').ObjectId;
 
-	var app = express();
+	/*var app = express();
 
 	app.use(bodyParser.urlencoded({extended:true}));
 	app.use(bodyParser.json());
@@ -19,7 +19,7 @@ var express = require('express'),
 		res.setHeader("Access-Control-allow-Credentials", true);
 
 		next();
-	});
+	});*/
 
 	Schema = new mongoose.Schema({
       		id       : String, 
@@ -59,8 +59,7 @@ var express = require('express'),
 	//POST
 	app.post('/api', function(req, res){
 		//res.setHeader("Access-Control-allow-Origin", "*"); //ou coloca a url no lugar do * se quiser limitar as chamadas
-		res.send({msg: 'oi'});
-		res.json(200, {msg: 'OK' });
+	
 		var date = new Date();
 		time_stamp = date.getTime();
 
@@ -97,7 +96,8 @@ var express = require('express'),
 
 	//GET all
 	app.get('/api', function(req, res){
-
+		res.send({msg: 'oi'});
+		res.json(200, {msg: 'OK' });
 		//res.setHeader("Access-Control-allow-Origin", "*"); //ou coloca a url no lugar do * se quiser limitar as chamadas
 
 		db.open(function(err, mongoClient){
