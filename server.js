@@ -53,12 +53,14 @@ var express = require('express'),
 
 	app.get('/', function(req, res){
 		res.send({msg: 'oi'});
+		res.json(200, {msg: 'OK' });
 	});
 
 	//POST
 	app.post('/api', function(req, res){
 		//res.setHeader("Access-Control-allow-Origin", "*"); //ou coloca a url no lugar do * se quiser limitar as chamadas
 		res.send({msg: 'oi'});
+		res.json(200, {msg: 'OK' });
 		var date = new Date();
 		time_stamp = date.getTime();
 
