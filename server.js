@@ -32,7 +32,7 @@ var express = require('express'),
 
 	console.log('Servidor HTTP esta escutando na porta ' + port);
 
-	var uri = 'mongodb://lidiaxp:lidiaxp123@host:port/db';
+	var uri = 'mongodb://lidiaxp:lidiaxp123@ds149724.mlab.com:49724/instagram';
 	mongodb.MongoClient.connect(uri, function(err, db) {
 	
 	app.get('/', function(req, res){
