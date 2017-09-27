@@ -22,7 +22,7 @@ var express  = require('express'),
     app.use(bodyParser.urlencoded({ extended: true })) // support encoded bodies
 
     app.get('/api', function (req, res) {
-      res.json(200, {msg: 'OK' });
+      res.json(200, {msg: 'Working' });
     })
 
 
