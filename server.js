@@ -1,88 +1,48 @@
-var mongodb = require('mongodb');
+var restify = require('restify');  
+var server = restify.createServer();
+server.use(restify.bodyParser());
 
-// Create seed data
+var mongoose = require('mongoose/');
+var config = require('./config');
+db = mongoose.connect(config.creds.mongoose_auth),
+Schema = mongoose.Schema;
 
-var seedData = [
-  {
-    decade: '1970s',
-    artist: 'Debby Boone',
-    song: 'You Light Up My Life',
-    weeksAtOne: 10
-  },
-  {
-    decade: '1980s',
-    artist: 'Olivia Newton-John',
-    song: 'Physical',
-    weeksAtOne: 10
-  },
-  {
-    decade: '1990s',
-    artist: 'Mariah Carey',
-    song: 'One Sweet Day',
-    weeksAtOne: 16
-  }
-];
-
-// Standard URI format: mongodb://[dbuser:dbpassword@]host:port/dbname
-
-var uri = 'mongodb://user:pass@host:port/db';
-
-mongodb.MongoClient.connect(uri, function(err, db) {
-  
-  if(err) throw err;
-  
-  /*
-   * First we'll add a few songs. Nothing is required to create the 
-   * songs collection; it is created automatically when we insert.
-   */
-
-  var songs = db.collection('songs');
-
-   // Note that the insert method can take either an array or a dict.
-
-  songs.insert(seedData, function(err, result) {
-    
-    if(err) throw err;
-
-    /*
-     * Then we need to give Boyz II Men credit for their contribution
-     * to the hit "One Sweet Day".
-     */
-
-    songs.update(
-      { song: 'One Sweet Day' }, 
-      { $set: { artist: 'Mariah Carey ft. Boyz II Men' } },
-      function (err, result) {
-        
-        if(err) throw err;
-
-        /*
-         * Finally we run a query which returns all the hits that spend 10 or
-         * more weeks at number 1.
-         */
-
-        songs.find({ weeksAtOne : { $gte: 10 } }).sort({ decade: 1 }).toArray(function (err, docs) {
-
-          if(err) throw err;
-
-          docs.forEach(function (doc) {
-            console.log(
-              'In the ' + doc['decade'] + ', ' + doc['song'] + ' by ' + doc['artist'] + 
-              ' topped the charts for ' + doc['weeksAtOne'] + ' straight weeks.'
-            );
-          });
-         
-          // Since this is an example, we'll clean up after ourselves.
-          songs.drop(function (err) {
-            if(err) throw err;
-           
-            // Only close the connection when your app is terminating.
-            db.close(function (err) {
-              if(err) throw err;
-            });
-          });
-        });
-      }
-    );
-  });
+// Create a schema for our data
+var MessageSchema = new Schema({
+  message: String,
+  date: Date
 });
+// Use the schema to register a model with MongoDb
+mongoose.model('Message', MessageSchema); 
+var Message = mongoose.model('Message');
+
+// This function is responsible for returning all entries for the Message model
+function getMessages(req, res, next) {
+  // Resitify currently has a bug which doesn't allow you to set default headers
+  // This headers comply with CORS and allow us to server our response to any origin
+  res.header("Access-Control-Allow-Origin", "*"); 
+  res.header("Access-Control-Allow-Headers", "X-Requested-With");
+  // .find() without any arguments, will return all results
+  // the `-1` in .sort() means descending order
+  Message.find().sort('date', -1).execFind(function (arr,data) {
+    res.send(data);
+    res.send('ola');
+    res.json(200, {msg: 'OK' });
+  });
+}
+
+function postMessage(req, res, next) {
+  res.header("Access-Control-Allow-Origin", "*");
+  res.header("Access-Control-Allow-Headers", "X-Requested-With");
+  // Create a new message model, fill it up and save it to Mongodb
+  var message = new Message();
+  message.message = req.params.message;
+  message.date = new Date();
+  message.save(function () {
+    res.send(req.body);
+  });
+}
+
+// Set up our routes and start the server
+server.get('/messages', getMessages);
+server.post('/messages', postMessage);
