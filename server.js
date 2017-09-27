@@ -51,8 +51,8 @@ var express = require('express'),
 
 	//console.log('Servidor HTTP esta escutando na porta ' + port);
 
-	app.get('/', function(req, res){
-		res.send({msg: 'oi'});
+	app.get('/api', function(req, res){
+	
 		res.json(200, {msg: 'OK' });
 	});
 
@@ -95,7 +95,7 @@ var express = require('express'),
 	});
 
 	//GET all
-	app.get('/api', function(req, res){
+	/*app.get('/api', function(req, res){
 		res.send({msg: 'oi'});
 		res.json(200, {msg: 'OK' });
 		//res.setHeader("Access-Control-allow-Origin", "*"); //ou coloca a url no lugar do * se quiser limitar as chamadas
@@ -112,7 +112,7 @@ var express = require('express'),
 				});
 			});
 		});
-	});
+	});*/
 
 	//GET por id
 	app.get('/api/:id', function(req, res){
