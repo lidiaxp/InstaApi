@@ -1,6 +1,7 @@
 var express = require('express'),
 	bodyParser = require('body-parser'),
 	mongodb = require('mongodb'),
+        mongoose = require('mongoose'),
 	multiparty = require('connect-multiparty'),
 	fs = require('fs'),
 	objectId = require('mongodb').ObjectId;
@@ -20,17 +21,35 @@ var express = require('express'),
 		next();
 	});
 
-	var port = 8080;
+	Schema = new mongoose.Schema({
+      		id       : String, 
+      		title    : String,
+      		completed: Boolean
+    	}),
 
-	app.listen(port);
+    	Todo = mongoose.model('Todo', Schema);
 
-	var db = new mongodb.Db(
+	//var port = 8080;
+
+	//app.listen(port);
+
+	/*var db = new mongodb.Db(
 		'instagram',
 		new mongodb.Server('localhost', 27017, {}),
 		{}
-	);
+	);*/
 
-	console.log('Servidor HTTP esta escutando na porta ' + port);
+	mongoose.connect(process.env.MONGOLAB_URI, function (error) {
+	    if (error) console.error(error);
+    	    else console.log('mongo connected');
+ 	});
+
+	express()
+  // https://scotch.io/tutorials/use-expressjs-to-get-url-and-post-parameters
+  	.use(bodyParser.json()) // support json encoded bodies
+  	.use(bodyParser.urlencoded({ extended: true })) // support encoded bodies
+
+	//console.log('Servidor HTTP esta escutando na porta ' + port);
 
 	app.get('/', function(req, res){
 		res.send({msg: 'oi'});
@@ -39,7 +58,7 @@ var express = require('express'),
 	//POST
 	app.post('/api', function(req, res){
 		//res.setHeader("Access-Control-allow-Origin", "*"); //ou coloca a url no lugar do * se quiser limitar as chamadas
-
+		res.send({msg: 'oi'});
 		var date = new Date();
 		time_stamp = date.getTime();
 
