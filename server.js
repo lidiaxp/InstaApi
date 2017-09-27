@@ -1,45 +1,91 @@
-var express = require('express'),
-	bodyParser = require('body-parser'),
-	mongodb = require('mongodb'),
-	multiparty = require('connect-multiparty'),
-	fs = require('fs'),
-	objectId = require('mongodb').ObjectId;
+var mongodb = require('mongodb');
 
-	var app = express();
+// Create seed data
 
-	app.use(bodyParser.urlencoded({extended:true}));
-	app.use(bodyParser.json());
-	app.use(multiparty());
+var seedData = [
+  {
+    decade: '1970s',
+    artist: 'Debby Boone',
+    song: 'You Light Up My Life',
+    weeksAtOne: 10
+  },
+  {
+    decade: '1980s',
+    artist: 'Olivia Newton-John',
+    song: 'Physical',
+    weeksAtOne: 10
+  },
+  {
+    decade: '1990s',
+    artist: 'Mariah Carey',
+    song: 'One Sweet Day',
+    weeksAtOne: 16
+  }
+];
 
-	app.use(function(req, res, next){
-		res.setHeader("Access-Control-allow-Origin", "*");
-		res.setHeader("Access-Control-allow-Methods", "GET, POST, PUT, DELETE");
-		res.setHeader("Access-Control-allow-Headers", "Content-type");
-		res.setHeader("Access-Control-allow-Credentials", true);
+// Standard URI format: mongodb://[dbuser:dbpassword@]host:port/dbname
 
-		next();
-	});
+var uri = 'mongodb://lidiaxp:lidiaxp123@ds149724.mlab.com:49724/instagram';
 
-	var port = 8080;
+mongodb.MongoClient.connect(uri, function(err, db) {
+  
+  if(err) throw err;
+  
+  /*
+   * First we'll add a few songs. Nothing is required to create the 
+   * songs collection; it is created automatically when we insert.
+   */
 
-	app.listen(port);
+  var songs = db.collection('songs');
 
-	var db = new mongodb.Db(
-		'instagram',
-		new mongodb.Server('localhost', 27017, {}),
-		{}
-	);
+   // Note that the insert method can take either an array or a dict.
 
-	console.log('Servidor HTTP esta escutando na porta ' + port);
+  songs.insert(seedData, function(err, result) {
+    
+    if(err) throw err;
 
-	var uri = 'mongodb://lidiaxp:lidiaxp123@ds149724.mlab.com:49724/instagram';
-	mongodb.MongoClient.connect(uri, function(err, db) {
-	
-	app.get('/', function(req, res){
-		res.send({msg: 'oi'});
-	});
-	}
+    /*
+     * Then we need to give Boyz II Men credit for their contribution
+     * to the hit "One Sweet Day".
+     */
 
+    songs.update(
+      { song: 'One Sweet Day' }, 
+      { $set: { artist: 'Mariah Carey ft. Boyz II Men' } },
+      function (err, result) {
+        
+        if(err) throw err;
+
+        /*
+         * Finally we run a query which returns all the hits that spend 10 or
+         * more weeks at number 1.
+         */
+
+        songs.find({ weeksAtOne : { $gte: 10 } }).sort({ decade: 1 }).toArray(function (err, docs) {
+
+          if(err) throw err;
+
+          docs.forEach(function (doc) {
+            console.log(
+              'In the ' + doc['decade'] + ', ' + doc['song'] + ' by ' + doc['artist'] + 
+              ' topped the charts for ' + doc['weeksAtOne'] + ' straight weeks.'
+            );
+          });
+         
+          // Since this is an example, we'll clean up after ourselves.
+          songs.drop(function (err) {
+            if(err) throw err;
+           
+            // Only close the connection when your app is terminating.
+            db.close(function (err) {
+              if(err) throw err;
+            });
+          });
+        });
+      }
+    );
+  });
+});
 	
 /*
 	//POST
