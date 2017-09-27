@@ -6,9 +6,9 @@ var express = require('express'),
 	//fs = require('fs'),
 	//objectId = require('mongodb').ObjectId;
 
-	/*var app = express();
+	var app = express();
 
-	app.use(bodyParser.urlencoded({extended:true}));
+	/*app.use(bodyParser.urlencoded({extended:true}));
 	app.use(bodyParser.json());
 	app.use(multiparty());
 
@@ -44,10 +44,10 @@ var express = require('express'),
     	    else console.log('mongo connected');
  	});
 
-	express()
+	
   // https://scotch.io/tutorials/use-expressjs-to-get-url-and-post-parameters
-  	.use(bodyParser.json()) // support json encoded bodies
-  	.use(bodyParser.urlencoded({ extended: true })) // support encoded bodies
+  	app.use(bodyParser.json()) // support json encoded bodies
+  	app.use(bodyParser.urlencoded({ extended: true })) // support encoded bodies
 
 	//console.log('Servidor HTTP esta escutando na porta ' + port);
 
